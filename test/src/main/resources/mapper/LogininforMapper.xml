@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gttc.test.mapper.LogininforMapper">
+
+    <resultMap type="Logininfor" id="LogininforResult">
+        <result property="infoId"    column="info_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="ip"    column="IP"    />
+        <result property="msg"    column="msg"    />
+        <result property="loginTime"    column="login_time"    />
+    </resultMap>
+
+    <sql id="selectLogininforVo">
+        select info_id, user_name, IP, msg, login_time from logininfor
+    </sql>
+
+    <select id="selectLogininforList" parameterType="Logininfor" resultMap="LogininforResult">
+        <include refid="selectLogininforVo"/>
+        <where>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="ip != null  and ip != ''"> and IP = #{ip}</if>
+            <if test="msg != null  and msg != ''"> and msg = #{msg}</if>
+            <if test="loginTime != null "> and login_time = #{loginTime}</if>
+        </where>
+    </select>
+
+    <select id="selectLogininforAll"  resultMap="LogininforResult">
+        select * from logininfor
+    </select>
+
+    <insert id="insertLogininfor" parameterType="Logininfor" useGeneratedKeys="true" keyProperty="infoId">
+        insert into logininfor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">user_name,</if>
+            <if test="ip != null">IP,</if>
+            <if test="msg != null">msg,</if>
+            <if test="loginTime != null">login_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">#{userName},</if>
+            <if test="ip != null">#{ip},</if>
+            <if test="msg != null">#{msg},</if>
+            <if test="loginTime != null">#{loginTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLogininfor" parameterType="Logininfor">
+        update logininfor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="ip != null">IP = #{ip},</if>
+            <if test="msg != null">msg = #{msg},</if>
+            <if test="loginTime != null">login_time = #{loginTime},</if>
+        </trim>
+        where info_id = #{infoId}
+    </update>
+
+    <delete id="deleteLogininforByInfoId" parameterType="Long">
+        delete from logininfor where info_id = #{infoId}
+    </delete>
+
+    <delete id="deleteLogininforByInfoIds" parameterType="String">
+        delete from logininfor where info_id in
+        <foreach item="infoId" collection="array" open="(" separator="," close=")">
+            #{infoId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gttc.test.mapper.CheckoutMapper">
+    
+    <resultMap type="Checkout" id="CheckoutResult">
+        <result property="category"    column="category"    />
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="explain"    column="explains"    />
+        <result property="grade"    column="grade"    />
+        <result property="content"    column="content"    />
+    </resultMap>
+
+    <sql id="selectCheckoutVo">
+        select category, id, name, explains, grade, content from checkout
+    </sql>
+
+    <select id="selectCheckoutList" parameterType="Checkout" resultMap="CheckoutResult">
+        <include refid="selectCheckoutVo"/>
+        <where>  
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="explain != null  and explain != ''"> and explains = #{explain}</if>
+            <if test="grade != null  and grade != ''"> and grade = #{grade}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+    </select>
+    
+    <select id="selectCheckoutByCategory" parameterType="String" resultMap="CheckoutResult">
+        <include refid="selectCheckoutVo"/>
+        where category = #{category}
+    </select>
+        
+    <insert id="insertCheckout" parameterType="Checkout">
+        insert into checkout
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="category != null">category,</if>
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="explain != null">explains,</if>
+            <if test="grade != null">grade,</if>
+            <if test="content != null">content,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="category != null">#{category},</if>
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="explain != null">#{explain},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="content != null">#{content},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCheckout" parameterType="Checkout">
+        update checkout
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="id != null">id = #{id},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="explain != null">explains = #{explain},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="content != null">content = #{content},</if>
+        </trim>
+        where category = #{category}
+    </update>
+
+    <delete id="deleteCheckoutByCategory" parameterType="String">
+        delete from checkout where category = #{category}
+    </delete>
+
+    <delete id="deleteCheckoutByCategorys" parameterType="String">
+        delete from checkout where category in 
+        <foreach item="category" collection="array" open="(" separator="," close=")">
+            #{category}
+        </foreach>
+    </delete>
+</mapper>
